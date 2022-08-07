@@ -1,4 +1,5 @@
 const Book = require("../models/Book");
+const googleBooksService = require("../services/googleBooksService");
 
 const getBooks = (req, res) => {
   Book.find((err, books) => {
@@ -10,4 +11,11 @@ const getBooks = (req, res) => {
   });
 };
 
+const searchBooks = async (req, res) => {
+  const searchParams = req.params.searchParams;
+  const searchBooksResult = await googleBooksService.searchBooks(searchParams);
+  res.json(searchBooksResult);
+};
+
 exports.getBooks = getBooks;
+exports.searchBooks = searchBooks;
