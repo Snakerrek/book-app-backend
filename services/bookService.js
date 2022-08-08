@@ -5,9 +5,25 @@ const getAllBooks = async (req, res) => {
   res.json(allBooks);
 };
 
+const removeDuplicatedBooks = (books) => {
+  const booksWithoutDuplicates = [];
+  books.forEach((book) => {
+    let addBook = true;
+    booksWithoutDuplicates.forEach((uniqueBook) => {
+      if (uniqueBook._id === book._id) {
+        addBook = false;
+      }
+    });
+    if (addBook) {
+      booksWithoutDuplicates.push(book);
+    }
+  });
+  return booksWithoutDuplicates;
+};
+
 const filterBooksForAuthor = (author, allBooks) => {
   const authorByWords = author.split(" ");
-  return allBooks.filter((book) => {
+  const foundBooks = allBooks.filter((book) => {
     let bookResult = null;
     book.authors.forEach((author) => {
       authorByWords.forEach((word) => {
@@ -20,11 +36,12 @@ const filterBooksForAuthor = (author, allBooks) => {
       return bookResult;
     }
   });
+  return removeDuplicatedBooks(foundBooks);
 };
 
 const filterBooksForTitle = (title, allBooks) => {
   const titleByWords = title.split(" ");
-  return allBooks.filter((book) => {
+  const foundBooks = allBooks.filter((book) => {
     let bookResult = null;
     titleByWords.forEach((word) => {
       if (book.title.includes(word)) {
@@ -35,14 +52,16 @@ const filterBooksForTitle = (title, allBooks) => {
       return bookResult;
     }
   });
+  return removeDuplicatedBooks(foundBooks);
 };
 
 const filterBooksForISBN = (isbn, allBooks) => {
-  return allBooks.filter((book) => {
+  const foundBooks = allBooks.filter((book) => {
     if (book.isbn == isbn) {
       return book;
     }
   });
+  return removeDuplicatedBooks(foundBooks);
 };
 
 const searchByAuthor = async (req, res) => {
@@ -74,11 +93,13 @@ const searchBooks = async (req, res) => {
   const searchByTitleResult = filterBooksForTitle(searchParams, allBooks);
   const searchByAuthorResult = filterBooksForAuthor(searchParams, allBooks);
 
-  res.json([
+  const foundBooks = [
     ...searchByISBNResult,
     ...searchByTitleResult,
     ...searchByAuthorResult,
-  ]);
+  ];
+
+  res.json(removeDuplicatedBooks(foundBooks));
 };
 
 exports.getAllBooks = getAllBooks;
