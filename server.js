@@ -12,9 +12,9 @@ app.use(express.json({ extended: false }));
 
 connectDB();
 
-// routes
-const booksRoutes = require("./routes/books");
-app.use("/", booksRoutes);
+// controllers
+const bookController = require("./controllers/bookController");
+app.use("/", bookController);
 
 const port = process.env.PORT || 8080;
 
