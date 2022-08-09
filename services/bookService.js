@@ -27,7 +27,7 @@ const filterBooksForAuthor = (author, allBooks) => {
     let bookResult = null;
     book.authors.forEach((author) => {
       authorByWords.forEach((word) => {
-        if (author.includes(word)) {
+        if (author.toLowerCase().includes(word.toLowerCase())) {
           bookResult = book;
         }
       });
@@ -44,7 +44,7 @@ const filterBooksForTitle = (title, allBooks) => {
   const foundBooks = allBooks.filter((book) => {
     let bookResult = null;
     titleByWords.forEach((word) => {
-      if (book.title.includes(word)) {
+      if (book.title && book.title.toLowerCase().includes(word.toLowerCase())) {
         bookResult = book;
       }
     });
@@ -57,7 +57,7 @@ const filterBooksForTitle = (title, allBooks) => {
 
 const filterBooksForISBN = (isbn, allBooks) => {
   const foundBooks = allBooks.filter((book) => {
-    if (book.isbn == isbn) {
+    if (book.isbn && book.isbn == isbn) {
       return book;
     }
   });
