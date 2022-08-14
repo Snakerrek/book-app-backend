@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res) => {
-  console.log(req.body);
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -13,7 +12,10 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
     });
     const user = await newUser.save();
-    res.status(200).json({ message: "Account succesfully created!" });
+    res.status(200).json({
+      message: "Account succesfully created!",
+      registerSuccessful: true,
+    });
   } catch (err) {
     res.status(500).json(err);
   }

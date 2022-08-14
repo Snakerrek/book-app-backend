@@ -90,7 +90,6 @@ const searchByISBN = async (req, res) => {
   try {
     const isbn = req.params.isbn;
     const allBooks = await databaseService.getAllBooks();
-    console.log(filterBooksForISBN(isbn, allBooks));
     res.status(200).json(filterBooksForISBN(isbn, allBooks));
   } catch (err) {
     res.status(500).json(err);
