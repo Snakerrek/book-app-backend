@@ -14,7 +14,11 @@ connectDB();
 
 // controllers
 const bookController = require("./controllers/bookController");
-app.use("/", bookController);
+const authController = require("./controllers/authController");
+const userController = require("./controllers/userController");
+app.use("/books", bookController);
+app.use("/auth", authController);
+app.use("/user", userController);
 
 const port = process.env.PORT || 8080;
 
