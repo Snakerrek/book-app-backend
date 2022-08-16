@@ -23,38 +23,38 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const userLoggingIn = req.body;
-
-  User.findOne({ username: userLoggingIn.username }).then((dbUser) => {
-    if (!dbUser) {
-      return res.json({
-        message: "Invalid Username or Password",
+  const dbEntry = await User.findOne({ username: userLoggingIn.username });
+  if (!dbEntry) {
+    return res.status(400).json({
+      message: "Invalid Username or Password",
+    });
+  }
+  const isPasswordCorrect = await bcrypt.compare(
+    userLoggingIn.password,
+    dbEntry.password
+  );
+  console.log(isPasswordCorrect);
+  if (!isPasswordCorrect) {
+    return res.status(400).json({
+      message: "Invalid Username or Password",
+    });
+  }
+  const payload = {
+    id: dbEntry._id,
+    userName: dbEntry.username,
+  };
+  jwt.sign(
+    payload,
+    process.env.JWT_SECRET,
+    { expiresIn: 86400 },
+    (err, token) => {
+      if (err) return res.status(500).json({ message: err });
+      return res.status(200).json({
+        message: "Success",
+        token: "Bearer " + token,
       });
     }
-    bcrypt
-      .compare(userLoggingIn.password, dbUser.password)
-      .then((isCorrect) => {
-        if (isCorrect) {
-          const payload = {
-            id: dbUser._id,
-            userName: dbUser.username,
-          };
-          jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: 86400 },
-            (err, token) => {
-              if (err) return res.json({ message: err });
-              return res.json({
-                message: "Success",
-                token: "Bearer " + token,
-              });
-            }
-          );
-        } else {
-          return res.json({ message: "Invalid Username or Password" });
-        }
-      });
-  });
+  );
 };
 
 const verifyJWT = (req, res, next) => {
@@ -63,7 +63,7 @@ const verifyJWT = (req, res, next) => {
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err)
-        return res.json({
+        return res.status(500).json({
           isLoggedIn: false,
           message: "Failed To Authenticate",
         });
@@ -73,7 +73,9 @@ const verifyJWT = (req, res, next) => {
       next();
     });
   } else {
-    res.json({ message: "Incorrect Token Given", isLoggedIn: false });
+    res
+      .status(400)
+      .json({ message: "Incorrect Token Given", isLoggedIn: false });
   }
 };
 
