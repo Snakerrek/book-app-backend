@@ -33,7 +33,7 @@ const loginUser = async (req, res) => {
     userLoggingIn.password,
     dbEntry.password
   );
-  console.log(isPasswordCorrect);
+
   if (!isPasswordCorrect) {
     return res.status(400).json({
       message: "Invalid Username or Password",
