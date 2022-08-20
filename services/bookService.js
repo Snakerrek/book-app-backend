@@ -116,8 +116,26 @@ const searchBooks = async (req, res) => {
   }
 };
 
+const getDetails = async (req, res) => {
+  try {
+    const bookId = req.params.id;
+    const book = await databaseService.getBookFullInfo(bookId);
+    console.log("elo", book);
+    if (book) {
+      return res.status(200).json(book);
+    } else {
+      return res
+        .status(400)
+        .json({ message: "There is no book with given id!" });
+    }
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+};
+
 exports.getAllBooks = getAllBooks;
 exports.searchBooks = searchBooks;
 exports.searchByAuthor = searchByAuthor;
 exports.searchByTitle = searchByTitle;
 exports.searchByISBN = searchByISBN;
+exports.getDetails = getDetails;
