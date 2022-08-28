@@ -9,5 +9,6 @@ router.get("/searchBooksByTitle/:title", bookService.searchByTitle);
 router.get("/searchBooksByISBN/:isbn", bookService.searchByISBN);
 router.get("/searchBooksByAuthor/:author", bookService.searchByAuthor);
 router.get("/getDetails/:id", bookService.getDetails);
+router.post("/addBook", bookService.addBook);
 
 module.exports = router;

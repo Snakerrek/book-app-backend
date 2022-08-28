@@ -133,9 +133,24 @@ const getDetails = async (req, res) => {
   }
 };
 
+const addBook = async (req, res) => {
+  try {
+    const book = await databaseService.addBook(req.body);
+    if (book) {
+      res.status(200).json({
+        message: "Added book succesfully",
+        registerSuccessful: true,
+      });
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 exports.getAllBooks = getAllBooks;
 exports.searchBooks = searchBooks;
 exports.searchByAuthor = searchByAuthor;
 exports.searchByTitle = searchByTitle;
 exports.searchByISBN = searchByISBN;
 exports.getDetails = getDetails;
+exports.addBook = addBook;

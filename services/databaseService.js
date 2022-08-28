@@ -8,5 +8,11 @@ const getBookFullInfo = async (id) => {
   return await Book.findById(id);
 };
 
+const addBook = async (newBook) => {
+  const book = new Book(newBook);
+  return await book.save();
+};
+
 exports.getAllBooks = getAllBooks;
 exports.getBookFullInfo = getBookFullInfo;
+exports.addBook = addBook;
