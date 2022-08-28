@@ -3,10 +3,12 @@ const router = express.Router();
 
 const bookService = require("../services/bookService");
 
-router.get("/books/getAllBooks", bookService.getAllBooks);
-router.get("/books/searchBooks/:searchParams", bookService.searchBooks);
-router.get("/books/searchBooksByTitle/:title", bookService.searchByTitle);
-router.get("/books/searchBooksByISBN/:isbn", bookService.searchByISBN);
-router.get("/books/searchBooksByAuthor/:author", bookService.searchByAuthor);
+router.get("/getAllBooks", bookService.getAllBooks);
+router.get("/searchBooks/:searchParams", bookService.searchBooks);
+router.get("/searchBooksByTitle/:title", bookService.searchByTitle);
+router.get("/searchBooksByISBN/:isbn", bookService.searchByISBN);
+router.get("/searchBooksByAuthor/:author", bookService.searchByAuthor);
+router.get("/getDetails/:id", bookService.getDetails);
+router.post("/addBook", bookService.addBook);
 
 module.exports = router;
