@@ -120,7 +120,6 @@ const getDetails = async (req, res) => {
   try {
     const bookId = req.params.id;
     const book = await databaseService.getBookFullInfo(bookId);
-    console.log("elo", book);
     if (book) {
       return res.status(200).json(book);
     } else {

@@ -28,6 +28,13 @@ const BookSchema = new mongoose.Schema({
   cover: {
     type: String,
   },
+  reviews: [
+    {
+      starRating: { type: Number, min: 1, max: 10 },
+      review: { type: String },
+      authorID: { type: String },
+    },
+  ],
 });
 
 module.exports = Book = mongoose.model("book", BookSchema);
