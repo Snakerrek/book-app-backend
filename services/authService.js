@@ -21,6 +21,16 @@ const registerUser = async (req, res) => {
   }
 };
 
+const isPasswordCorrect = async (id, password) => {
+  const dbEntry = await User.findById(id);
+  if (!dbEntry) {
+    return false;
+  } else {
+    const isCorrect = await bcrypt.compare(password, dbEntry.password);
+    return isCorrect;
+  }
+};
+
 const loginUser = async (req, res) => {
   const userLoggingIn = req.body;
   const dbEntry = await User.findOne({ username: userLoggingIn.username });
@@ -82,3 +92,4 @@ const verifyJWT = (req, res, next) => {
 exports.registerUser = registerUser;
 exports.loginUser = loginUser;
 exports.verifyJWT = verifyJWT;
+exports.isPasswordCorrect = isPasswordCorrect;

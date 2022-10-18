@@ -1,21 +1,28 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const { isPasswordCorrect } = require("../services/authService");
 
 const updateUser = async (req, res) => {
   if (req.body.userId === req.params.id) {
-    if (req.body.password) {
+    if (req.body.password && req.body.oldPassword) {
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(req.body.password, salt);
     }
     try {
-      const updatedUser = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-          $set: req.body,
-        },
-        { new: true }
+      const isOldPasswordCorrect = await isPasswordCorrect(
+        req.body.userId,
+        req.body.oldPassword
       );
-      res.status(200).json(updatedUser);
+      if (isOldPasswordCorrect) {
+        const updatedUser = await User.findByIdAndUpdate(
+          req.params.id,
+          {
+            $set: req.body,
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedUser);
+      }
     } catch (err) {
       res.status(500).json(err);
     }
