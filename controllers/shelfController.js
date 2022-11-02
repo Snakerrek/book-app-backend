@@ -6,8 +6,8 @@ const shelfService = require("../services/shelfService");
 router.post("/shelve", shelfService.shelveBook);
 router.post("/unshelve", shelfService.unshelveBook);
 router.post("/updateProgress", shelfService.updateProgress);
-router.get("/getShelf", shelfService.getShelf);
-router.get("/getUserBookData", shelfService.getUserBookData);
-router.get("/getAllUserBooks", shelfService.getAllUserBooks);
+router.post("/getShelf", shelfService.getShelf);
+router.post("/getUserBookData", shelfService.getUserBookData);
+router.post("/getAllUserBooks", shelfService.getAllUserBooks);
 
 module.exports = router;

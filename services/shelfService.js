@@ -5,16 +5,28 @@ const shelveBook = async (req, res) => {
     const user = await databaseService.getUser(req.body.userId);
     const bookId = req.body.bookId;
     const shelf = req.body.shelf;
+
+    let bookData = {
+      bookId: bookId,
+      shelf: shelf,
+      progress: 0,
+    };
+
     if (user && bookId && shelf) {
-      const book = {
-        bookId: bookId,
-        shelf: shelf,
-        progress: 0,
-      };
-      user.books.push(book);
+      if (user.books.filter((book) => book.bookId === bookId).length > 0) {
+        user.books.forEach((book, index) => {
+          if (book.bookId === bookId) {
+            user.books[index].shelf = shelf;
+            bookData = user.books[index];
+          }
+        });
+      } else {
+        user.books.push(bookData);
+      }
       await user.save();
       res.status(200).json({
         message: `Book added to ${shelf} shelf.`,
+        book: bookData,
       });
     }
   } catch (err) {
@@ -47,7 +59,6 @@ const updateProgress = async (req, res) => {
       user.books.forEach((book) => {
         console.log(book.bookId);
         if (book.bookId === bookId) {
-          console.log("found!");
           book.progress = progress;
         }
       });
@@ -79,15 +90,18 @@ const getUserBookData = async (req, res) => {
     const user = await databaseService.getUser(req.body.userId);
     const bookId = req.body.bookId;
     if (user && bookId) {
-      const book = user.books.filter((book) => book.bookId === bookId);
-      res.status(200).json(book);
+      const book = user.books.filter((book) => book.bookId === bookId)[0];
+      if (book) {
+        res.status(200).json(book);
+      } else {
+        res.status(404).json({ message: "Book not found." });
+      }
     }
   } catch (err) {
     res.status(500).json(err);
   }
 };
 
-//method that will return all users books
 const getAllUserBooks = async (req, res) => {
   try {
     const user = await databaseService.getUser(req.body.userId);
