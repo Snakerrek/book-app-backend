@@ -20,6 +20,13 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    books: [
+      {
+        bookId: { type: String },
+        shelf: { type: String },
+        progress: { type: Number },
+      },
+    ],
   },
   { timestamps: true }
 );

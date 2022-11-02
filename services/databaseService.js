@@ -1,4 +1,5 @@
 const Book = require("../models/Book");
+const User = require("../models/User");
 
 const getAllBooks = async () => {
   return await Book.find(
@@ -39,7 +40,13 @@ const rateBook = async (data) => {
   return await book.save();
 };
 
+// get user by id from mongodb database using mongoose
+const getUser = async (id) => {
+  return await User.findById(id);
+};
+
 exports.getAllBooks = getAllBooks;
 exports.getBookFullInfo = getBookFullInfo;
 exports.addBook = addBook;
 exports.rateBook = rateBook;
+exports.getUser = getUser;
