@@ -5,11 +5,16 @@ const shelveBook = async (req, res) => {
     const user = await databaseService.getUser(req.body.userId);
     const bookId = req.body.bookId;
     const shelf = req.body.shelf;
+    let progress = 0;
+    if (shelf === "READ") {
+      const book = await databaseService.getBookFullInfo(bookId);
+      progress = book.pageCount;
+    }
 
     let bookData = {
       bookId: bookId,
       shelf: shelf,
-      progress: 0,
+      progress: progress,
     };
 
     if (user && bookId && shelf) {
@@ -18,6 +23,7 @@ const shelveBook = async (req, res) => {
           if (book.bookId === bookId) {
             user.books[index].shelf = shelf;
             bookData = user.books[index];
+            bookData.progress = progress;
           }
         });
       } else {
@@ -56,15 +62,17 @@ const updateProgress = async (req, res) => {
     const bookId = req.body.bookId;
     const progress = req.body.progress;
     if (user && bookId && progress) {
+      let updatedBook = {};
       user.books.forEach((book) => {
-        console.log(book.bookId);
         if (book.bookId === bookId) {
           book.progress = progress;
+          updatedBook = book;
         }
       });
       await user.save();
       res.status(200).json({
         message: `Progress updated.`,
+        book: updatedBook,
       });
     }
   } catch (err) {

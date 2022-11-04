@@ -58,7 +58,6 @@ const getUser = async (req, res) => {
       }
     });
     const randomObject = { ...others, books: enhancedBooks };
-    console.log("others", others);
     res.status(200).json(randomObject);
   } catch (err) {
     res.status(500).json(err);
