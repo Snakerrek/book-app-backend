@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const databaseService = require("../services/databaseService");
 const bcrypt = require("bcrypt");
 const { isPasswordCorrect } = require("../services/authService");
 
@@ -48,7 +49,17 @@ const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const { password, ...others } = user._doc;
-    res.status(200).json(others);
+    const allBooks = await databaseService.getAllBooks();
+    const enhancedBooks = [];
+    others.books.forEach((book, index) => {
+      const bookDetails = allBooks.filter((b) => b._id.equals(book.bookId));
+      if (bookDetails && bookDetails.length > 0) {
+        enhancedBooks.push({ ...book._doc, bookDetails: bookDetails[0] });
+      }
+    });
+    const randomObject = { ...others, books: enhancedBooks };
+    console.log("others", others);
+    res.status(200).json(randomObject);
   } catch (err) {
     res.status(500).json(err);
   }
