@@ -120,8 +120,25 @@ const getDetails = async (req, res) => {
   try {
     const bookId = req.params.id;
     const book = await databaseService.getBookFullInfo(bookId);
+
+    const enhancedReviews = [];
+    const users = await databaseService.getAllUsers();
+    book.reviews.forEach((review) => {
+      const user = users.filter((user) => {
+        return user._id.equals(review.authorID);
+      });
+      enhancedReviews.push({
+        review: review.review,
+        starRating: review.starRating,
+        author: {
+          authorID: review.authorID,
+          authorName: user[0].username,
+          authorAvatar: user[0].avatar,
+        },
+      });
+    });
     if (book) {
-      return res.status(200).json(book);
+      return res.status(200).json({ ...book._doc, reviews: enhancedReviews });
     } else {
       return res
         .status(400)

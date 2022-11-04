@@ -45,8 +45,13 @@ const getUser = async (id) => {
   return await User.findById(id);
 };
 
+const getAllUsers = async () => {
+  return await User.find({});
+};
+
 exports.getAllBooks = getAllBooks;
 exports.getBookFullInfo = getBookFullInfo;
 exports.addBook = addBook;
 exports.rateBook = rateBook;
 exports.getUser = getUser;
+exports.getAllUsers = getAllUsers;
