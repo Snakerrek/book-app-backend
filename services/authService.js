@@ -10,8 +10,9 @@ const registerUser = async (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: hashedPassword,
+      avatar: req.body.avatar,
     });
-    const user = await newUser.save();
+    await newUser.save();
     res.status(200).json({
       message: "Account succesfully created!",
       registerSuccessful: true,
