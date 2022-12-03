@@ -61,7 +61,7 @@ const updateProgress = async (req, res) => {
     const user = await databaseService.getUser(req.body.userId);
     const bookId = req.body.bookId;
     const progress = req.body.progress;
-    if (user && bookId && progress) {
+    if (user && bookId && progress !== undefined) {
       let updatedBook = {};
       user.books.forEach((book) => {
         if (book.bookId === bookId) {
