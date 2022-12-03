@@ -1,5 +1,6 @@
 const Book = require("../models/Book");
 const User = require("../models/User");
+const fetch = require("node-fetch");
 
 const getAllBooks = async () => {
   return await Book.find(
@@ -48,6 +49,39 @@ const getUser = async (id) => {
 const getAllUsers = async () => {
   return await User.find({});
 };
+
+const fetchFromGoogleAndAddBook = async (isbn) => {
+  const bookTempData = await fetch(
+    `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`
+  );
+  const bookTempDataFromJson = await bookTempData.json();
+  if (bookTempDataFromJson.items.length > 0) {
+    const bookPureData = await fetch(
+      `https://www.googleapis.com/books/v1/volumes/${bookTempDataFromJson.items[0].id}`
+    );
+    const bookData = await bookPureData.json();
+    if (bookData) {
+      const newBook = {
+        isbn: isbn,
+        title: bookData.volumeInfo.title,
+        publisher: bookData.volumeInfo.publisher,
+        publishedDate: bookData.volumeInfo.publishedDate,
+        authors: bookData.volumeInfo.authors,
+        description: bookData.volumeInfo.description,
+        pageCount: bookData.volumeInfo.pageCount,
+        categories: bookData.volumeInfo.categories,
+        cover: bookData.volumeInfo.imageLinks?.thumbnail
+          ? bookData.volumeInfo.imageLinks.thumbnail
+          : "",
+      };
+      await addBook(newBook);
+    }
+  }
+};
+const arrayOfIsbns = [];
+// arrayOfIsbns.forEach(async (isbn) => {
+//   await fetchFromGoogleAndAddBook(isbn);
+// });
 
 exports.getAllBooks = getAllBooks;
 exports.getBookFullInfo = getBookFullInfo;
