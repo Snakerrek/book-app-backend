@@ -32,6 +32,23 @@ const updateUser = async (req, res) => {
   }
 };
 
+const updateUserAvatar = async (req, res) => {
+  console.log(req.body.avatar, req.body.userId, req.params.id);
+
+  if (req.body.userId === req.params.id) {
+    try {
+      const user = await User.findById(req.params.id);
+      user.avatar = req.body.avatar;
+      const updatedUser = await user.save();
+      res.status(200).json(updatedUser);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    res.status(401).json("You can update only your account!");
+  }
+};
+
 const deleteUser = async (req, res) => {
   if (req.body.userId === req.params.id) {
     try {
@@ -67,3 +84,4 @@ const getUser = async (req, res) => {
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
 exports.getUser = getUser;
+exports.updateUserAvatar = updateUserAvatar;
