@@ -18,6 +18,13 @@ const addBook = async (newBook) => {
   return await book.save();
 };
 
+const updateBook = async (id, updatedBook) => {
+  const book = await Book.findOneAndUpdate({ _id: id }, updatedBook, {
+    new: true,
+  });
+  return book;
+};
+
 const rateBook = async (data) => {
   const book = await getBookFullInfo(data.bookID);
   let updated = false;
@@ -53,6 +60,7 @@ const getAllUsers = async () => {
 exports.getAllBooks = getAllBooks;
 exports.getBookFullInfo = getBookFullInfo;
 exports.addBook = addBook;
+exports.updateBook = updateBook;
 exports.rateBook = rateBook;
 exports.getUser = getUser;
 exports.getAllUsers = getAllUsers;

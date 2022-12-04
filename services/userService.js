@@ -33,8 +33,6 @@ const updateUser = async (req, res) => {
 };
 
 const updateUserAvatar = async (req, res) => {
-  console.log(req.body.avatar, req.body.userId, req.params.id);
-
   if (req.body.userId === req.params.id) {
     try {
       const user = await User.findById(req.params.id);

@@ -11,6 +11,7 @@ router.get("/searchBooksByISBN/:isbn", bookService.searchByISBN);
 router.get("/searchBooksByAuthor/:author", bookService.searchByAuthor);
 router.get("/getDetails/:id", bookService.getDetails);
 router.post("/addBook", bookService.addBook);
+router.post("/updateBook/:id", bookService.updateBook);
 router.post("/rateBook", bookReviewService.rateBook);
 
 module.exports = router;

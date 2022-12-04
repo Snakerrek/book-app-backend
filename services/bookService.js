@@ -1,4 +1,5 @@
 const databaseService = require("./databaseService");
+const { enhanceBookReviews } = require("./bookReviewService");
 
 const getAllBooks = async (req, res) => {
   const allBooks = await databaseService.getAllBooks();
@@ -120,25 +121,9 @@ const getDetails = async (req, res) => {
   try {
     const bookId = req.params.id;
     const book = await databaseService.getBookFullInfo(bookId);
-
-    const enhancedReviews = [];
-    const users = await databaseService.getAllUsers();
-    book.reviews.forEach((review) => {
-      const user = users.filter((user) => {
-        return user._id.equals(review.authorID);
-      });
-      enhancedReviews.push({
-        review: review.review,
-        starRating: review.starRating,
-        author: {
-          authorID: review.authorID,
-          authorName: user[0].username,
-          authorAvatar: user[0].avatar,
-        },
-      });
-    });
+    const enhancedBook = await enhanceBookReviews(book);
     if (book) {
-      return res.status(200).json({ ...book._doc, reviews: enhancedReviews });
+      return res.status(200).json(enhancedBook);
     } else {
       return res
         .status(400)
@@ -155,7 +140,23 @@ const addBook = async (req, res) => {
     if (book) {
       res.status(200).json({
         message: "Added book succesfully",
-        registerSuccessful: true,
+        book: book,
+      });
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const updateBook = async (req, res) => {
+  try {
+    const { reviews, ...others } = req.body;
+    const book = await databaseService.updateBook(req.params.id, others);
+    const enhancedBook = await enhanceBookReviews(book);
+    if (book) {
+      res.status(200).json({
+        message: "Updated book succesfully",
+        book: enhancedBook,
       });
     }
   } catch (err) {
@@ -170,3 +171,4 @@ exports.searchByTitle = searchByTitle;
 exports.searchByISBN = searchByISBN;
 exports.getDetails = getDetails;
 exports.addBook = addBook;
+exports.updateBook = updateBook;
