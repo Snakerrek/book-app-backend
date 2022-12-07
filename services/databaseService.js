@@ -3,10 +3,11 @@ const User = require("../models/User");
 const fetch = require("node-fetch");
 
 const getAllBooks = async () => {
-  return await Book.find(
-    {},
-    { description: 0, pageCount: 0, categories: 0, reviews: 0 }
-  );
+  return await Book.find({});
+};
+
+const getAllBooksGenres = async () => {
+  return await Book.find({}, { categories: 1 });
 };
 
 const getBookFullInfo = async (id) => {
@@ -64,3 +65,4 @@ exports.updateBook = updateBook;
 exports.rateBook = rateBook;
 exports.getUser = getUser;
 exports.getAllUsers = getAllUsers;
+exports.getAllBooksGenres = getAllBooksGenres;

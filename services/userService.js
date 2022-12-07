@@ -79,7 +79,30 @@ const getUser = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    const allBooks = await databaseService.getAllBooksGenres();
+    const usersRes = [];
+    users.forEach((user) => {
+      const enhancedBooks = [];
+      user.books.forEach((book, index) => {
+        const bookDetails = allBooks.filter((b) => b._id.equals(book.bookId));
+        if (bookDetails && bookDetails.length > 0) {
+          enhancedBooks.push({ ...book._doc, bookDetails: bookDetails[0] });
+        }
+      });
+      const { password, createdAt, updatedAt, ...others } = user._doc;
+      usersRes.push({ ...others, books: enhancedBooks });
+    });
+    res.status(200).json(usersRes);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
 exports.getUser = getUser;
+exports.getAllUsers = getAllUsers;
 exports.updateUserAvatar = updateUserAvatar;
