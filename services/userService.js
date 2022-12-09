@@ -101,8 +101,71 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const followUser = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const userToFollowId = req.body.userToFollowId;
+    const user = await User.findById(userId);
+    const userToFollow = await User.findById(userToFollowId);
+    if (
+      user.following.filter((followedUser) =>
+        followedUser._id.equals(userToFollowId)
+      ).length > 0
+    ) {
+      res.status(403).json("You already follow this user");
+    } else {
+      user.following.push({
+        _id: userToFollowId,
+        username: userToFollow.username,
+        avatar: userToFollow.avatar,
+      });
+      if (!userToFollow.followers) userToFollow.followers = [];
+      userToFollow.followers.push({
+        _id: userId,
+        username: user.username,
+        avatar: user.avatar,
+      });
+      await user.save();
+      await userToFollow.save();
+      res.status(200).json("User has been followed");
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const unfollowUser = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const userToUnfollowId = req.body.userToUnfollowId;
+    const user = await User.findById(userId);
+    const userToUnfollow = await User.findById(userToUnfollowId);
+    if (
+      user.following.filter((followedUser) =>
+        followedUser._id.equals(userToUnfollowId)
+      ).length === 0
+    ) {
+      res.status(403).json("You don't follow this user");
+    } else {
+      user.following = user.following.filter(
+        (followedUser) => !followedUser._id.equals(userToUnfollowId)
+      );
+      userToUnfollow.followers = userToUnfollow.followers.filter(
+        (follower) => !follower._id.equals(userId)
+      );
+      await user.save();
+      await userToUnfollow.save();
+      res.status(200).json("User has been unfollowed");
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
 exports.getUser = getUser;
 exports.getAllUsers = getAllUsers;
 exports.updateUserAvatar = updateUserAvatar;
+exports.followUser = followUser;
+exports.unfollowUser = unfollowUser;

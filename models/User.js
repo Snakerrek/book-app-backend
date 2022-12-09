@@ -27,6 +27,20 @@ const UserSchema = new mongoose.Schema(
         progress: { type: Number },
       },
     ],
+    followers: [
+      {
+        userId: { type: String },
+        username: { type: String },
+        avatar: { type: String },
+      },
+    ],
+    following: [
+      {
+        userId: { type: String },
+        username: { type: String },
+        avatar: { type: String },
+      },
+    ],
   },
   { timestamps: true }
 );
