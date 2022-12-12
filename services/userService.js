@@ -3,6 +3,20 @@ const databaseService = require("../services/databaseService");
 const bcrypt = require("bcrypt");
 const { isPasswordCorrect } = require("../services/authService");
 
+const enhanceUserBooks = async (user) => {
+  const { password, ...others } = user._doc;
+  const allBooks = await databaseService.getAllBooks();
+  const enhancedBooks = [];
+  others.books.forEach((book, index) => {
+    const bookDetails = allBooks.filter((b) => b._id.equals(book.bookId));
+    if (bookDetails && bookDetails.length > 0) {
+      enhancedBooks.push({ ...book._doc, bookDetails: bookDetails[0] });
+    }
+  });
+  const enhancedUser = { ...others, books: enhancedBooks };
+  return enhancedUser;
+};
+
 const updateUser = async (req, res) => {
   if (req.body.userId === req.params.id) {
     if (req.body.password && req.body.oldPassword) {
@@ -63,17 +77,8 @@ const deleteUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    const { password, ...others } = user._doc;
-    const allBooks = await databaseService.getAllBooks();
-    const enhancedBooks = [];
-    others.books.forEach((book, index) => {
-      const bookDetails = allBooks.filter((b) => b._id.equals(book.bookId));
-      if (bookDetails && bookDetails.length > 0) {
-        enhancedBooks.push({ ...book._doc, bookDetails: bookDetails[0] });
-      }
-    });
-    const randomObject = { ...others, books: enhancedBooks };
-    res.status(200).json(randomObject);
+    const enhancedUser = await enhanceUserBooks(user);
+    res.status(200).json(enhancedUser);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -127,7 +132,10 @@ const followUser = async (req, res) => {
       });
       await user.save();
       await userToFollow.save();
-      res.status(200).json("User has been followed");
+      const enhancedUser = await enhanceUserBooks(user);
+      res
+        .status(200)
+        .json({ message: "User has been followed", updatedUser: userToFollow });
     }
   } catch (err) {
     res.status(500).json(err);
@@ -155,7 +163,11 @@ const unfollowUser = async (req, res) => {
       );
       await user.save();
       await userToUnfollow.save();
-      res.status(200).json("User has been unfollowed");
+      const enhancedUser = await enhanceUserBooks(userToUnfollow);
+      res.status(200).json({
+        message: "User has been unfollowed",
+        updatedUser: enhancedUser,
+      });
     }
   } catch (err) {
     res.status(500).json(err);
