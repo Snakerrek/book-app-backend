@@ -1,4 +1,5 @@
 const databaseService = require("./databaseService");
+const postService = require("./postService");
 
 const shelveBook = async (req, res) => {
   try {
@@ -30,6 +31,9 @@ const shelveBook = async (req, res) => {
         user.books.push(bookData);
       }
       await user.save();
+
+      postService.addShelvingPost(user._id, bookId, shelf);
+
       res.status(200).json({
         message: `Book added to ${shelf} shelf.`,
         book: bookData,

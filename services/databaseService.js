@@ -1,6 +1,6 @@
 const Book = require("../models/Book");
 const User = require("../models/User");
-const fetch = require("node-fetch");
+const postService = require("./postService");
 
 const getAllBooks = async () => {
   return await Book.find({});
@@ -45,6 +45,12 @@ const rateBook = async (data) => {
       authorID: data.authorID,
       review: data.reviewText,
     });
+  }
+  if (data.starRating) {
+    postService.addStarRatingPost(data.authorID, book._id, data.starRating);
+  }
+  if (data.reviewText) {
+    postService.addReviewPost(data.authorID, book._id, data.reviewText);
   }
   return await book.save();
 };

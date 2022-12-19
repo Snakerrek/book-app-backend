@@ -41,6 +41,16 @@ const UserSchema = new mongoose.Schema(
         avatar: { type: String },
       },
     ],
+    posts: [
+      {
+        bookID: { type: String },
+        datetime: { type: Date },
+        reviewText: { type: String },
+        starRating: { type: Number },
+        shelfName: { type: String },
+        followedUserID: { type: String },
+      },
+    ],
   },
   { timestamps: true }
 );

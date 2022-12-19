@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const postService = require("./postService");
 const databaseService = require("../services/databaseService");
 const bcrypt = require("bcrypt");
 const { isPasswordCorrect } = require("../services/authService");
@@ -132,7 +133,9 @@ const followUser = async (req, res) => {
       });
       await user.save();
       await userToFollow.save();
-      const enhancedUser = await enhanceUserBooks(user);
+
+      postService.addFollowPost(userId, userToFollowId);
+
       res
         .status(200)
         .json({ message: "User has been followed", updatedUser: userToFollow });
