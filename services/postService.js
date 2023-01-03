@@ -35,7 +35,7 @@ const getUserEnhancedPosts = (user, allBooks, allUsers) => {
         return user._id.toString() === post.followedUserID.toString();
       });
       if (followedUser) {
-        return {
+        enhancedPost = {
           ...enhancedPost,
           followedUser: {
             _id: followedUser._id,
@@ -54,11 +54,11 @@ const getUserPosts = async (req, res) => {
   const userId = req.params.userId;
   try {
     const user = await DatabaseService.getUser(userId);
-    const allBooks = await DatabaseService.getAllBooks();
-    const allUsers = await DatabaseService.getAllUsers();
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    const allBooks = await DatabaseService.getAllBooks();
+    const allUsers = await DatabaseService.getAllUsers();
     const posts = getUserEnhancedPosts(user, allBooks, allUsers);
     posts.sort((a, b) => {
       return new Date(b.datetime) - new Date(a.datetime);
