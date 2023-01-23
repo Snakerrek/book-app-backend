@@ -10,14 +10,30 @@ const registerUser = async (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: hashedPassword,
+      avatar: req.body.avatar,
     });
-    const user = await newUser.save();
+    await newUser.save();
     res.status(200).json({
       message: "Account succesfully created!",
       registerSuccessful: true,
     });
   } catch (err) {
+    if (err.code === 11000) {
+      res
+        .status(500)
+        .json({ message: "Użytkownik o takiej nazwie już istnieje" });
+    }
     res.status(500).json(err);
+  }
+};
+
+const isPasswordCorrect = async (id, password) => {
+  const dbEntry = await User.findById(id);
+  if (!dbEntry) {
+    return false;
+  } else {
+    const isCorrect = await bcrypt.compare(password, dbEntry.password);
+    return isCorrect;
   }
 };
 
@@ -26,7 +42,7 @@ const loginUser = async (req, res) => {
   const dbEntry = await User.findOne({ username: userLoggingIn.username });
   if (!dbEntry) {
     return res.status(400).json({
-      message: "Invalid Username or Password",
+      message: "Niepoprawna nazwa użytkownika lub hasło",
     });
   }
   const isPasswordCorrect = await bcrypt.compare(
@@ -36,7 +52,7 @@ const loginUser = async (req, res) => {
 
   if (!isPasswordCorrect) {
     return res.status(400).json({
-      message: "Invalid Username or Password",
+      message: "Niepoprawna nazwa użytkownika lub hasło",
     });
   }
   const payload = {
@@ -82,3 +98,4 @@ const verifyJWT = (req, res, next) => {
 exports.registerUser = registerUser;
 exports.loginUser = loginUser;
 exports.verifyJWT = verifyJWT;
+exports.isPasswordCorrect = isPasswordCorrect;

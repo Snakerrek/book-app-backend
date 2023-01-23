@@ -20,6 +20,37 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    books: [
+      {
+        bookId: { type: String },
+        shelf: { type: String },
+        progress: { type: Number },
+      },
+    ],
+    followers: [
+      {
+        userId: { type: String },
+        username: { type: String },
+        avatar: { type: String },
+      },
+    ],
+    following: [
+      {
+        userId: { type: String },
+        username: { type: String },
+        avatar: { type: String },
+      },
+    ],
+    posts: [
+      {
+        bookID: { type: String },
+        datetime: { type: Date },
+        reviewText: { type: String },
+        starRating: { type: Number },
+        shelfName: { type: String },
+        followedUserID: { type: String },
+      },
+    ],
   },
   { timestamps: true }
 );
